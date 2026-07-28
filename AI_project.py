@@ -1,12 +1,18 @@
 from fastapi import FastAPI, UploadFile, Form
 from pypdf import PdfReader
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 import io
 import re
 import math
 from collections import Counter
 
 app = FastAPI()
-
+app.mount("/static", StaticFiles(directory="templates"), name="static")
+@app.get("/", response_class=HTMLResponse)
+def home():
+    with open("templates/index.html") as f:
+        return f.read()
 def get_word_counts(text):
     words = re.findall(r'\w+', text.lower())
     return Counter(words)

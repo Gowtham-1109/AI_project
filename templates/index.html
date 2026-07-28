@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Resume Screener</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+    * { box-sizing: border-box; }
+    body {
+        font-family: 'Inter', sans-serif;
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at top left, #1e1b4b, #0f0c29 60%);
+        color: #f1f1f4;
+        padding: 40px 20px;
+    }
+    .card {
+        width: 100%;
+        max-width: 560px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(12px);
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .badge {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #a78bfa;
+        background: rgba(167, 139, 250, 0.12);
+        padding: 5px 12px;
+        border-radius: 999px;
+        margin-bottom: 14px;
+    }
+    h1 {
+        margin: 0 0 6px 0;
+        font-size: 26px;
+        font-weight: 800;
+        background: linear-gradient(90deg, #a78bfa, #60a5fa);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+    p.sub {
+        margin: 0 0 28px 0;
+        color: #a1a1aa;
+        font-size: 14px;
+    }
+    label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #d4d4d8;
+        margin: 18px 0 6px;
+    }
+    input[type="text"], textarea {
+        width: 100%;
+        padding: 12px 14px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 10px;
+        color: #f1f1f4;
+        font-family: inherit;
+        font-size: 14px;
+        resize: vertical;
+        outline: none;
+        transition: border 0.2s;
+    }
+    input[type="text"]:focus, textarea:focus {
+        border-color: #a78bfa;
+    }
+    .file-drop {
+        border: 1.5px dashed rgba(255,255,255,0.18);
+        border-radius: 10px;
+        padding: 22px;
+        text-align: center;
+        cursor: pointer;
+        transition: border 0.2s, background 0.2s;
+        font-size: 13px;
+        color: #a1a1aa;
+    }
+    .file-drop:hover { border-color: #a78bfa; background: rgba(167,139,250,0.06); }
+    .file-drop.has-file { border-color: #60a5fa; color: #e4e4e7; }
+    input[type="file"] { display: none; }
+    button {
+        width: 100%;
+        margin-top: 26px;
+        padding: 14px;
+        border: none;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 700;
+        color: #0f0c29;
+        background: linear-gradient(90deg, #a78bfa, #60a5fa);
+        cursor: pointer;
+        transition: transform 0.15s, box-shadow 0.15s;
+    }
+    button:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(167,139,250,0.35); }
+    button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    #result {
+        display: none;
+        margin-top: 26px;
+        padding: 22px;
+        border-radius: 14px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        animation: fadeIn 0.4s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: translateY(0);} }
+    .score-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .score-label { font-size: 13px; color: #a1a1aa; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .score-value { font-size: 28px; font-weight: 800; }
+    .bar-bg { width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; margin-bottom: 20px; }
+    .bar-fill { height: 100%; background: linear-gradient(90deg, #a78bfa, #60a5fa); border-radius: 999px; transition: width 0.6s ease; }
+    .skills-title { font-size: 13px; font-weight: 600; color: #d4d4d8; margin-bottom: 8px; }
+    .skill-pill {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 5px 12px;
+        border-radius: 999px;
+        margin: 0 6px 6px 0;
+        background: rgba(248, 113, 113, 0.12);
+        color: #f87171;
+        border: 1px solid rgba(248,113,113,0.25);
+    }
+    .skill-pill.none {
+        background: rgba(74, 222, 128, 0.12);
+        color: #4ade80;
+        border: 1px solid rgba(74,222,128,0.25);
+    }
+    .spinner {
+        width: 16px; height: 16px;
+        border: 2px solid rgba(15,12,41,0.3);
+        border-top-color: #0f0c29;
+        border-radius: 50%;
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 8px;
+        animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+    <div class="card">
+        <span class="badge">AI-Powered</span>
+        <h1>Resume Screener</h1>
+        <p class="sub">Upload a resume, paste a job description, and get an instant match score.</p>
+
+        <form id="screenForm">
+            <label>Resume (PDF)</label>
+            <div class="file-drop" id="dropZone">Click to choose a PDF file</div>
+            <input type="file" id="resumeFile" accept=".pdf" required>
+
+            <label>Job Description</label>
+            <textarea id="jobDesc" rows="5" placeholder="Paste the job description here..." required></textarea>
+
+            <label>Required Skills</label>
+            <input type="text" id="skills" placeholder="python, sql, docker" required>
+
+            <button type="submit" id="submitBtn">Screen Resume</button>
+        </form>
+
+        <div id="result">
+            <div class="score-row">
+                <span class="score-label">Match Score</span>
+                <span class="score-value" id="scoreValue">0%</span>
+            </div>
+            <div class="bar-bg"><div class="bar-fill" id="scoreBar" style="width:0%"></div></div>
+            <div class="skills-title">Missing Skills</div>
+            <div id="skillsList"></div>
+        </div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById("dropZone");
+        const fileInput = document.getElementById("resumeFile");
+        dropZone.addEventListener("click", () => fileInput.click());
+        fileInput.addEventListener("change", () => {
+            if (fileInput.files.length > 0) {
+                dropZone.textContent = fileInput.files[0].name;
+                dropZone.classList.add("has-file");
+            }
+        });
+
+        document.getElementById("screenForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById("submitBtn");
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span>Screening...';
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+            formData.append("job_description", document.getElementById("jobDesc").value);
+            formData.append("required_skills", document.getElementById("skills").value);
+
+            try {
+                const response = await fetch("/screen-file", { method: "POST", body: formData });
+                const data = await response.json();
+
+                const pct = Math.round(data.match_score * 100);
+                document.getElementById("scoreValue").textContent = pct + "%";
+                document.getElementById("scoreBar").style.width = pct + "%";
+
+                const skillsList = document.getElementById("skillsList");
+                skillsList.innerHTML = "";
+                if (data.missing_skills.length === 0) {
+                    skillsList.innerHTML = '<span class="skill-pill none">All skills covered</span>';
+                } else {
+                    data.missing_skills.forEach(skill => {
+                        skillsList.innerHTML += `<span class="skill-pill">${skill}</span>`;
+                    });
+                }
+
+                document.getElementById("result").style.display = "block";
+            } catch (err) {
+                alert("Something went wrong. Please try again.");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Screen Resume";
+            }
+        });
+    </script>
+</body>
+</html>
